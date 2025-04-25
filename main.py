@@ -14,7 +14,6 @@ sorted_indices = np.argsort(items_areas) # indices that would sort the array (fr
 # Sorted items (from biggest to lowest)
 items = items[list(reversed(sorted_indices))]
 
-
 def putItem(available_spaces, item_to_place):
     """
     Returns coordinates (bottom left) if placed. (-1, -1) if no space if available.
@@ -64,32 +63,43 @@ def putItem(available_spaces, item_to_place):
 
 # Executing algorithm -------------------------------------------------------------
 
-available_spaces = np.array([[BIN_SIZE, BIN_SIZE, 0, 0]]) # initial available space is a whole bin
-answers = np.array([np.array([0, 0, 0, 0])])
+current_bin = 0
+yet_to_insert = items.copy() # initially, all items are yet to be inserted
 
+# While there are still items to place (create a new bin)
+while len(yet_to_insert) != 0:
+    available_spaces = np.array([[BIN_SIZE, BIN_SIZE, 0, 0]]) # initial available space is a whole bin
+    answers = np.array([np.array([0, 0, 0, 0])])
 
+    # Try placing every item in the current bin -----------------------------------------------
+    # Inserting items in current bin
 
+    to_insert = yet_to_insert.copy()
+    yet_to_insert = np.array([[0, 0]])
 
-for i in range(len(items)):
-    item = items[i]
+    for i in range(len(to_insert)):
+        item = to_insert[i]
 
-    print('\n\n----- Analyzing new item -----')
+        print('\n\n----- Analyzing new item -----')
+        
+        # Inserting item
+        insert_result = putItem(available_spaces, item)
+        if insert_result is not None:
+            available_spaces = insert_result[0]
+            coordinates = insert_result[1]
+
+            answers = np.append(answers, [np.array([item[0], item[1], coordinates[0], coordinates[1]])], axis=0)
+            
+            print(f'Successfully placed item on position ({coordinates[0]}, {coordinates[1]}).')
+        
+        # Creating new bin
+        else:
+            yet_to_insert = np.append(yet_to_insert, [item], axis=0)
+            print(f'Failed to insert item in bin. No more space available.')
     
-    insert_result = putItem(available_spaces, item)
-    if insert_result is not None:
-        available_spaces = insert_result[0]
-        coordinates = insert_result[1]
+    yet_to_insert = np.delete(yet_to_insert, 0, axis=0) # remove first element (which has no meaning)
 
-        print("Inserting: ", np.array([item[0], item[1], coordinates[0], coordinates[1]]))
-
-        answers = np.append(answers, [np.array([item[0], item[1], coordinates[0], coordinates[1]])], axis=0)
-        print(f'Successfully placed item on position ({coordinates[0]}, {coordinates[1]}).')
-    else:
-        print(f'Failed to insert item in bin. No more space available.')
-
-answers = np.delete(answers, 0, axis=0)
-print("\n\n----- Answers ------\n", answers)
-
-
-# Drawing bin
-draw_bin(BIN_SIZE, answers)
+    # Drawing bin
+    draw_bin(BIN_SIZE, answers, f'bin-{current_bin}.png')
+    current_bin += 1
+        
