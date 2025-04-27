@@ -97,10 +97,9 @@ def construct_solution(items, bin_size=(10, 10), save_img=False):
                 
                 #print(f'Successfully placed item on position ({coordinates[0]}, {coordinates[1]}).')
             
-            # Creating new bin
             else:
                 yet_to_insert = np.append(yet_to_insert, [item], axis=0)
-                #print(f'Failed to insert item in bin. No more space available.')
+                #print(f'Failed to insert item in bin.')
         
         yet_to_insert = np.delete(yet_to_insert, 0, axis=0) # remove first element (which has no meaning)
 
