@@ -4,6 +4,7 @@ from utils.draw_bin import draw_bin
 
 NUM_OF_ITEMS = 10
 BIN_SIZE = 10 # BIN_SIZExBIN_SIZE
+SAVE_IMG = False
 
 items = np.ceil(np.random.rand(NUM_OF_ITEMS, 2) * (BIN_SIZE))
 
@@ -65,9 +66,13 @@ def putItem(available_spaces, item_to_place):
 
 current_bin = 0
 yet_to_insert = items.copy() # initially, all items are yet to be inserted
+final_answer = np.array([[0, 0, 0, 0]]) # array of items
 
 # While there are still items to place (create a new bin)
 while len(yet_to_insert) != 0:
+    
+    # Setting Up New Bin ----------------------------------------------------------------------
+    current_bin += 1
     available_spaces = np.array([[BIN_SIZE, BIN_SIZE, 0, 0]]) # initial available space is a whole bin
     answers = np.array([np.array([0, 0, 0, 0])])
 
@@ -99,7 +104,18 @@ while len(yet_to_insert) != 0:
     
     yet_to_insert = np.delete(yet_to_insert, 0, axis=0) # remove first element (which has no meaning)
 
+    # Adding to final results
+    answers = np.delete(answers, 0, axis=0) # removing first element (no meaning)
+    final_answer = np.append(final_answer, answers, axis=0)
+
     # Drawing bin
-    draw_bin(BIN_SIZE, answers, f'bin-{current_bin}.png')
-    current_bin += 1
-        
+    if SAVE_IMG:
+        draw_bin(BIN_SIZE, answers, f'bin-{current_bin}.png')
+
+final_answer = np.delete(final_answer, 0, axis=0) # removing first element (no meaning)
+
+# Final Answers
+print(f'---------- Final Answer ----------')
+print(final_answer)
+
+print("Number of bins: ", current_bin)
