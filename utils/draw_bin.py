@@ -2,12 +2,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def draw_bin(bin_size, items=[], filename='Bin.png'):
-    plt.figure(figsize=(bin_size, bin_size))
+
+    plt.figure(figsize=bin_size)
     plt.title(label='Bin')
 
     # Set the scaling to a fixed interval (don't let it zoom in or out on the bin)
-    plt.xlim(0, bin_size)
-    plt.ylim(0, bin_size)
+    plt.xlim(0, bin_size[0])
+    plt.ylim(0, bin_size[1])
     
     for item in items:
         width = item[0]
