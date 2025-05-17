@@ -38,7 +38,22 @@ def construct_solution(items, bin_size=(10, 10), save_img=False):
             space_position = (space[2], space[3])
 
             # Can you insert it?
+            can_insert = False
+            rotate = False
+
             if space_dimensions[0] >= item_width and space_dimensions[1] >= item_height:
+                can_insert = True
+
+            # Check if you can insert the item if rotated (90deg)
+            elif space_dimensions[1] >= item_width and space_dimensions[0] >= item_height:
+                can_insert = True
+                rotate = True
+
+                temp = item_height
+                item_height = item_width
+                item_width = temp
+
+            if can_insert:
                 
                 # Update available spaces (split the available space into two more)
 
@@ -55,7 +70,9 @@ def construct_solution(items, bin_size=(10, 10), save_img=False):
                 available_spaces = np.delete(available_spaces, i, axis=0) # delete the space that used to be available
 
                 # Insert item (return the available spaces and its position)
-                return (available_spaces, (space[2], space[3]))
+                return (available_spaces, (space[2], space[3]), rotate)
+            # What if you rotate it?
+            #elif 
 
         return None
 
@@ -92,6 +109,12 @@ def construct_solution(items, bin_size=(10, 10), save_img=False):
             if insert_result is not None:
                 available_spaces = insert_result[0]
                 coordinates = insert_result[1]
+                rotated_item = insert_result[2]
+                
+                if rotated_item:
+                    temp = item[0]
+                    item[0] = item[1]
+                    item[1] = temp
 
                 answers = np.append(answers, [np.array([item[0], item[1], coordinates[0], coordinates[1]])], axis=0)
                 
