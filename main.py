@@ -3,8 +3,13 @@ import numpy as np
 from utils.draw_bin import draw_bin
 from time import time
 
-def generate_random_items(num_of_items, bin_size=(10,10)):
-    return np.ceil(np.random.rand(num_of_items, 2) * (bin_size))
+def generate_random_items(num_of_items, bin_size=(10,10), seed=None):
+    if seed is not None:
+        np.random.seed(seed)
+    result = np.ceil(np.random.rand(num_of_items, 2) * (bin_size))
+    np.random.seed()
+
+    return result
 
 def construct_solution(items, bin_size=(10, 10), save_img=False):
 
