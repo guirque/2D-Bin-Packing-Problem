@@ -13,13 +13,6 @@ def generate_random_items(num_of_items, bin_size=(10,10), seed=None):
 
 def construct_solution(items, bin_size=(10, 10), save_img=False):
 
-    getAreas = lambda items : [item[0]*item[1] for item in items]
-    items_areas = getAreas(items) # areas of items
-    sorted_indices = np.argsort(items_areas) # indices that would sort the array (from lowest to biggest)
-
-    # Sorted items (from biggest to lowest)
-    items = items[list(reversed(sorted_indices))]
-
     def putItem(available_spaces, item_to_place):
         """
         Returns coordinates (bottom left) if placed. (-1, -1) if no space if available.
@@ -144,6 +137,6 @@ def construct_solution(items, bin_size=(10, 10), save_img=False):
     # Final Answers
     #print(f'---------- Final Answer ----------')
     #print(final_answer)
-    return (final_answer, current_bin)
+    return (final_answer, current_bin+1)
 
     #print("Number of bins: ", current_bin)
