@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 random_items = generate_random_items(200, (10, 10))
 num_items = len(random_items)
 BIN_SIZE = (10,10)
-TIME_LIMIT = 300 # in seconds
+TIME_LIMIT = 150 # in seconds
 
 # Solution: a list of items. Submit it to the construct solution algorithm to obtain its cost and filled bins.
 
