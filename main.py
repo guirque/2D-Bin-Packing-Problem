@@ -137,6 +137,6 @@ def construct_solution(items, bin_size=(10, 10), save_img=False):
     # Final Answers
     #print(f'---------- Final Answer ----------')
     #print(final_answer)
-    return (final_answer, current_bin+1)
+    return (final_answer, current_bin)
 
     #print("Number of bins: ", current_bin)
