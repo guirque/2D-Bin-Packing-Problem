@@ -42,6 +42,36 @@ class half(crossover_class):
 
         return new_individual
 
+class random_split(crossover_class):
+
+    def crossover(self, individual1, cost_individual1, individual2, cost_individual2):
+        """
+            Returns a resulting individual.
+            Each individual is a list of lists.  
+            Each sublist has the following format: [id, width, height].
+            
+            Respects the order of items of the first half of the fittest individual.  
+            The other half respects the order of items from the other individual.
+        """
+
+        # Declaring individuals
+        fittest_individual = individual1 if cost_individual1 < cost_individual2 else individual2
+        other_individual = individual2
+
+        # Splitting
+        first_split_size = random()
+        while first_split_size < 0.2 or first_split_size > 0.8:
+            first_split_size = random()
+
+        fittest_part = np.array([item for item in fittest_individual][:math.floor(len(fittest_individual)*first_split_size)]) # half the items in fittest_individual
+        other_part = np.array([item for item in other_individual if item[0] not in fittest_part[:, 0]]) # all items in other_individual that are not in the fittest_half (the result preserves the order of other_half).
+
+        # Creating New Individual
+        new_individual = np.concat([fittest_part.copy(), other_part.copy()], axis=0)
+
+        return new_individual
+
+
 # HELPERS ######################################################################################################
 
 def log(msg, initial_time):
@@ -127,13 +157,15 @@ def binary_tournament(population, population_costs):
 # - Crossover: 
 #       "ALTERNATE": get alternate snippets (sequences of items), of size K, and merge them into a solution. If num_items % K != 0, a final snippet of lower size will be used.
 #       "HALF": get half from each parent.
+#       "RANDOM_SPLIT": get random fractions between the parents. At least 20% from each parent.
 #       "FITTEST_K": get K% from the fittest parent and (100-K)% from the other parent.
 # - Mutation:
 #       "RANDOM_SWAP_K": swap K random pairs of items. 
+#       "RANDOM_SWAP_K_PERCENT": swap K% random pairs of items.
 # - Stop criteria: time
 # - How to choose parent: binary tournament
 
-def ga_2D_bin_packing(items:list[list[2]], bin_size:tuple, time_limit:float, population_size:int = 5, crossover_mode:str="ALTERNATE", mutation_mode:str="RANDOM_SWAP_K", mutation_prob:float=0.02):
+def ga_2D_bin_packing(items:list[list[2]], bin_size:tuple, time_limit:float, population_size:int = 5, crossover_mode:str="RANDOM_SPLIT", mutation_mode:str="RANDOM_SWAP_K_PERCENT", mutation_prob:float=0.02):
     """
     Genetic algorithm to solve the 2D bin packing problem.
     - Stop criteria: time.
@@ -148,12 +180,8 @@ def ga_2D_bin_packing(items:list[list[2]], bin_size:tuple, time_limit:float, pop
         - time_limit: approximate execution time limit, in seconds.
         - population_size: number of individuals.
         - crossover_mode: 
-            - "ALTERNATE": get alternate snippets (sequences of items), of size K, and merge them into a solution. If num_items % K != 0, a final snippet of lower size will be used.
             - "HALF": get half from each parent.
-            - "FITTEST_K": get K% from the fittest parent and (100-K)% from the other parent.
-        - mutation_mode:
-            - "RANDOM_SWAP_K": swap K random pairs of items.
-            - "RANDOM_SWAP_K_PERCENT": swap K% random pairs of items.
+            - "RANDOM_SPLIT": get random fractions between the parents. At least 20% from each parent.
 
     # Returns
 
@@ -189,6 +217,8 @@ def ga_2D_bin_packing(items:list[list[2]], bin_size:tuple, time_limit:float, pop
     crossover_method = crossover_class()
     if crossover_mode == "HALF":
         crossover_method = half()
+    elif crossover_mode == "RANDOM_SPLIT":
+        crossover_method = random_split()
     
 
     # 0. Generate Individual with Greedy Method (which is our first individual)
@@ -317,6 +347,6 @@ def ga_2D_bin_packing(items:list[list[2]], bin_size:tuple, time_limit:float, pop
 
 BIN_SIZE = (10,10)
 
-random_items = generate_random_items(500, BIN_SIZE, seed=1000)
+random_items = generate_random_items(500, BIN_SIZE)
 
-results = ga_2D_bin_packing(random_items, (10,10), 60, population_size=10, crossover_mode="HALF", mutation_prob=0.2)
+results = ga_2D_bin_packing(random_items, (10,10), 300, population_size=5, crossover_mode="RANDOM_SPLIT", mutation_prob=0.2)
